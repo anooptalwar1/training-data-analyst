@@ -5,6 +5,8 @@ import numpy as np
 import tensorflow as tf
 
 # Determine CSV, label, and key columns
+
+# TODO: Add CSV_COLUMNS and LABEL_COLUMN
 CSV_COLUMNS = ["weight_pounds",
                "is_male",
                "mother_age",
@@ -14,6 +16,7 @@ LABEL_COLUMN = "weight_pounds"
 
 # Set default values for each CSV column.
 # Treat is_male and plurality as strings.
+# TODO: Add DEFAULTS
 DEFAULTS = [[0.0], ["null"], [0.0], ["null"], [0.0]]
 
 
@@ -36,7 +39,7 @@ def load_dataset(pattern, batch_size=1, mode='eval'):
     Args:
         pattern: str, file pattern to glob into list of files.
         batch_size: int, the number of examples per batch.
-        mode: 'eval' | 'train' to determine if training or evaluating.
+        mode: 'train' | 'eval' to determine if training or evaluating.
     Returns:
         `Dataset` object.
     """
@@ -47,7 +50,7 @@ def load_dataset(pattern, batch_size=1, mode='eval'):
         batch_size=batch_size,
         column_names=CSV_COLUMNS,
         column_defaults=DEFAULTS)
-
+    
     # Map dataset to features and label
     dataset = dataset.map(map_func=features_and_labels)  # features, label
 
@@ -59,7 +62,6 @@ def load_dataset(pattern, batch_size=1, mode='eval'):
     dataset = dataset.prefetch(buffer_size=1)
 
     return dataset
-
 
 def create_input_layers():
     """Creates dictionary of input layers for each feature.
@@ -179,6 +181,7 @@ def get_model_outputs(wide_inputs, deep_inputs, dnn_hidden_units):
     return output
 
 
+
 def rmse(y_true, y_pred):
     """Calculates RMSE evaluation metric.
 
@@ -228,10 +231,10 @@ def train_and_evaluate(args):
     trainds = load_dataset(
         args["train_data_path"],
         args["batch_size"],
-        tf.estimator.ModeKeys.TRAIN)
+        'train')
 
     evalds = load_dataset(
-        args["eval_data_path"], 1000, tf.estimator.ModeKeys.EVAL)
+        args["eval_data_path"], 1000, 'eval')
     if args["eval_steps"]:
         evalds = evalds.take(count=args["eval_steps"])
 
